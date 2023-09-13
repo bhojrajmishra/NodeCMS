@@ -15,6 +15,8 @@ app.set('view engine','ejs')
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 
+app.use(express.static("public/"))
+
 // allBlog
 app.get("/",async (req,res)=>{
     //blogs vanney table bata vayejati sabai data dey vaneko 
@@ -77,7 +79,43 @@ app.get("/delete/:id",async (req,res)=>{
     })
    res.redirect("/")
 })
+//edit blog
+app.get("/edit/:id",async(req,res)=>{
+    const id = req.params.id
 
+    const blog= await blogs.findAll({
+        where : {
+            id: id
+        }
+    })
+    res.render("editBlog",{blog:blog})
+})
+app.post("/editBlog/:id",async (req,res)=>{
+    const id = req.params.id
+    const title = req.body.title
+    const subTitle = req.body.subtitle
+    const description = req.body.description
+
+    // first approach 
+    // await  blogs.update(req.body,{
+    //     where :{
+    //         id : id
+    //     }
+    // })
+
+    // second approach 
+    await blogs.update({
+        title : title,
+        subTitle : subTitle,
+        description : description
+    },{
+        where : {
+            id : id
+        }
+    })
+
+    res.redirect("/single/" + id)
+})
 
 app.listen(3000,()=>{
     console.log("NodeJs project has started at port 3000")
