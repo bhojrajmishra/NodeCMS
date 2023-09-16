@@ -1,5 +1,6 @@
 const express = require('express')
-const { blogs } = require('./model/index')
+const { blogs, sequelize } = require('./model/index')
+const { QueryTypes } = require('sequelize')
 const app = express()
 
 
@@ -10,12 +11,16 @@ require("./model/index")
 // telling the nodejs to set view-engine to ejs
 app.set('view engine','ejs')
 
+// nodejs lai  file access garna dey vaneko hae yo code lay 
+app.use(express.static("public/"))
+
 
 // form bata data aairaxa parse gara or handle gar vaneko ho
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 
-app.use(express.static("public/"))
+
+
 
 // allBlog
 app.get("/",async (req,res)=>{
@@ -24,15 +29,19 @@ app.get("/",async (req,res)=>{
 
     // blogs vanney key/name ma allBlogs/data pass gareko ejs file lai
     res.render('blogs',{blogs:allBlogs})
+    // res.json({
+    //     status : 200,
+    //     blogs : allBlogs
+    // })
 })
 
 //createBlog
-app.get("/createblog",(req,res)=>{
-    res.render("createblogs")
+app.get("/createBlog",(req,res)=>{
+    res.render("createBlog")
 })
 
 //createBlog Post
-app.post("/createblog",async (req,res)=>{
+app.post("/createBlog",async (req,res)=>{
     
         // second approach
         // const {title,description,subtitle} = req.body
@@ -49,6 +58,10 @@ app.post("/createblog",async (req,res)=>{
         description : description
     })
     res.redirect("/")
+    // res.json({
+    //     status : 200,
+    //     message : "Blog created sucesfully"
+    // })
 })
 
 // single blog page 
@@ -77,26 +90,34 @@ app.get("/delete/:id",async (req,res)=>{
             id : id
         }
     })
+//    await  sequelize.query('DELETE FROM blogs WHERE id=?',{
+//         replacements  : [id],
+//         type : QueryTypes.DELETE
+//     })
    res.redirect("/")
 })
-//edit blog
-app.get("/edit/:id",async(req,res)=>{
-    const id = req.params.id
 
-    const blog= await blogs.findAll({
+
+// EDIT BLOG
+app.get("/edit/:id", async (req,res)=>{
+    const id = req.params.id
+    // find blog of that id 
+const blog =    await  blogs.findAll({
         where : {
-            id: id
+            id : id
         }
     })
-    res.render("editBlog",{blog:blog})
+
+    res.render("editBlog",{blog : blog})
 })
+
 app.post("/editBlog/:id",async (req,res)=>{
     const id = req.params.id
     const title = req.body.title
     const subTitle = req.body.subtitle
     const description = req.body.description
 
-    // first approach 
+    // first approach (X)
     // await  blogs.update(req.body,{
     //     where :{
     //         id : id
