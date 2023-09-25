@@ -34,7 +34,30 @@ exports.renderLoginForm = (req,res)=>{
     res.render("login")
 }
 
-exports.loginuser = (req,res)=>{
+exports.loginuser = async(req,res)=>{
     console.log(req.body)
     const {email,password} = req.body
+    //server side validation
+    if(!email || !password){
+        return res.send("email and password are required")
+    }
+    // check if that email exists or not 
+  const associatedDatawithEmail = await users.findAll({
+       where :{email : email} 
+    })
+    if(associatedDatawithEmail.length == 0){
+        res.send("email and password doesn't exists")
+    }
+    else{
+        const associtedEmailPassword = associatedDatawithEmail[0].password
+       const isMatched =  bcrypt.compareSync(password,associtedEmailPassword) //true or false
+       if(isMatched){
+        res.send("login succesfully")
+       }
+       else{
+        res.send("Invalid password")
+       }
+    }
+    res.redirect("/home")
+    //exist xaina vanye - > {}, xa vanye [{name:"",}]
 }
