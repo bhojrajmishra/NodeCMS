@@ -65,6 +65,5 @@ exports.loginuser = async(req,res)=>{
          res.send("Invalid password")
        }
     }
-    res.redirect("/home")
     //exist xaina vanye - > {}, xa vanye [{name:"",}]
 }

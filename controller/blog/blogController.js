@@ -1,11 +1,12 @@
-const { blogs } = require("../../model")
+const { blogs, users } = require("../../model")
 
 exports.renderCreateBlog = (req,res)=>{
     res.render("createBlog")
 }
 
 exports.createBlog = async (req,res)=>{
-    
+   // console.log(req.user[0].id,"userId from createBlog")
+    const userId = req.user[0].id
     // second approach
     // const {title,description,subtitle} = req.body
 // first approach
@@ -18,7 +19,8 @@ const subTitle = req.body.subtitle
 await blogs.create({
     title : title,
     subTitle:subTitle,
-    description : description
+    description : description,
+    userId : userId
 })
 res.redirect("/")
 // res.json({
@@ -29,8 +31,13 @@ res.redirect("/")
 
 exports.allBlog = async (req,res)=>{
     //blogs vanney table bata vayejati sabai data dey vaneko 
-    const allBlogs = await blogs.findAll() 
-
+    const allBlogs = await blogs.findAll({
+        include: 
+           {
+            model : users  //users->tableName
+           }
+        
+    });
     // blogs vanney key/name ma allBlogs/data pass gareko ejs file lai
     res.render('blogs',{blogs:allBlogs})
     // res.json({
@@ -47,6 +54,9 @@ exports.singleBlog = async(req,res)=>{
     const blog =  await blogs.findAll({
         where : {
             id : id
+        },
+        include : {
+            model : users
         }
     })
     // second finding approach
@@ -107,4 +117,17 @@ exports.editBlog = async (req,res)=>{
     })
 
     res.redirect("/single/" + id)
+}
+
+exports.renderMyBlogs = async(req,res)=>{
+//get this users bogs
+const userId = req.userId;
+//find blogs of this userId
+
+const myBlogs = await blogs.findAll({
+    where : {
+        userId : userId
+    }
+})
+    res.render("myBlogs.ejs",{myBlogs:myBlogs})
 }

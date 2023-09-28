@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 require('dotenv').config()//requiring dotenv and intializing it with default configuration
+const cookieParser = require('cookie-parser')
 
 
 //routes here
@@ -14,6 +15,7 @@ app.set('view engine','ejs')
 
 // nodejs lai  file access garna dey vaneko hae yo code lay 
 app.use(express.static("public/"))
+app.use(cookieParser())
 
 
 // form bata data aairaxa parse gara or handle gar vaneko ho
@@ -24,6 +26,6 @@ app.use("",authRoute)
 
 
 
-app.listen(3000,()=>{
+app.listen(4000,()=>{
     console.log("NodeJs project has started at port 3000")
 })
