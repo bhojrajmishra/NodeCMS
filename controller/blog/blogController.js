@@ -6,6 +6,7 @@ exports.renderCreateBlog = (req,res)=>{
 
 exports.createBlog = async (req,res)=>{
    // console.log(req.user[0].id,"userId from createBlog")
+   
     const userId = req.user[0].id
     // second approach
     // const {title,description,subtitle} = req.body
@@ -13,6 +14,12 @@ exports.createBlog = async (req,res)=>{
 const title = req.body.title
 const description  = req.body.description
 const subTitle = req.body.subtitle
+const filename = req.file.filename
+if(!title|| !description || !subTitle || !req.file){
+    return res.send (
+        "please provide title , description, subtitle ,file"
+    )
+}
 
 // database ma halnu paryo , database sanaga kehi operation await halnu parney hunchha 
 // agadi , await halepaxi mathi async halnu parney hunchha 
@@ -20,7 +27,8 @@ await blogs.create({
     title : title,
     subTitle:subTitle,
     description : description,
-    userId : userId
+    userId : userId,
+    image: process.env.PROJECT_URL + filename
 })
 res.redirect("/")
 // res.json({

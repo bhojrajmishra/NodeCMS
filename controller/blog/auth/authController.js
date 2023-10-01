@@ -67,3 +67,8 @@ exports.loginuser = async(req,res)=>{
     }
     //exist xaina vanye - > {}, xa vanye [{name:"",}]
 }
+
+exports.logOut = (req,res)=> {
+    res.clearCookie('token')
+    res.redirect("/login")
+}

@@ -1,12 +1,13 @@
-const dbConfig = require("../config/dbconfig");
+const dbConfig = require("../config/dbConfig");
 const { Sequelize, DataTypes } = require("sequelize");
-//la sequelize yo config lag 
+
+// la sequelize yo config haru lag ani database connect gardey vaneko hae 
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   host: dbConfig.HOST,
   dialect: dbConfig.dialect,
   operatorsAliases: false,
-  //port:6044,
-  port : 3306,
+  port : 3306, 
+  // port : 7013,
   pool: {
     max: dbConfig.pool.max,
     min: dbConfig.pool.min,
@@ -28,13 +29,16 @@ const db = {};
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
-//importing model files
+
+// importing model files 
 db.blogs = require("./blogModel.js")(sequelize, DataTypes);
-// db.reviews = require("./reviewModel.js")(sequelize, DataTypes);
 db.users = require("./userModel.js")(sequelize, DataTypes);
-// relationships 
+
+//RELATIONSHIPS
+
 db.users.hasMany(db.blogs)
 db.blogs.belongsTo(db.users)
+
 
 db.sequelize.sync({ force: false }).then(() => {
   console.log("yes re-sync done");
